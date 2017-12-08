@@ -16,6 +16,37 @@ Originally fork from http://bjtools.tiddlyspot.com
 
   var hljs = require("$:/plugins/tiddlywiki/highlight/highlight.js");
   var marked = require("$:/plugins/yeats/markdown/markdown.js");
+  var renderer = new marked.Renderer();
+
+  renderer.link = function (href, title, text) {
+    if (this.options.sanitize) {
+      try {
+        var prot = decodeURIComponent(unescape(href))
+          .replace(/[^\w:]/g, '')
+          .toLowerCase();
+      } catch (e) {
+        return '';
+      }
+      if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0 || prot.indexOf('data:') === 0) {
+        return '';
+      }
+    }
+    const attrs = [
+      `href=${href}`
+    ]
+    if (title) {
+      attrs.push(`title=${title}`)
+    }
+    if (href[0] === '#') {
+      attrs.push('class="tc-tiddlylink tc-tiddlylink-resolves"')
+    } else {
+      attrs.push(`target="_blank"`)
+      attrs.push(`rel="noopener noreferrer"`)
+      attrs.push('class="tc-tiddlylink-external"')
+    }
+
+    return `<a ${attrs.join(' ')}>${text}</a>`;
+  }
 
   var HighLighter = function(str, lang) {
     try {
@@ -30,7 +61,7 @@ Originally fork from http://bjtools.tiddlyspot.com
 
   marked.setOptions({
     highlight: HighLighter,
-    renderer: new marked.Renderer(),
+    renderer: renderer,
     gfm: true,
     tables: true,
     breaks: true,

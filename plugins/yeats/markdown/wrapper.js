@@ -17,6 +17,65 @@ Originally fork from http://bjtools.tiddlyspot.com
   var hljs = require("$:/plugins/tiddlywiki/highlight/highlight.js");
   var marked = require("$:/plugins/yeats/markdown/markdown.js");
   var renderer = new marked.Renderer();
+  let _options
+
+  renderer.image = function (href, title, text) {
+    var tag = "img", src = "",
+      tiddler = _options.wiki.getTiddler(href);
+    if(!tiddler) {
+      // The source isn't the title of a tiddler, so we'll assume it's a URL
+      src = _options.widget.getVariable("tv-get-export-image-link",{params: [{name: "src",value: href}],defaultValue: href});
+    } else {
+      // Check if it is an image tiddler
+      if(_options.wiki.isImageTiddler(href)) {
+        var type = tiddler.fields.type,
+          text = tiddler.fields.text,
+          _canonical_uri = tiddler.fields._canonical_uri;
+        // If the tiddler has body text then it doesn't need to be lazily loaded
+        if(text) {
+          // Render the appropriate element for the image type
+          switch(type) {
+            case "application/pdf":
+              tag = "embed";
+              src = "data:application/pdf;base64," + text;
+              break;
+            case "image/svg+xml":
+              src = "data:image/svg+xml," + encodeURIComponent(text);
+              break;
+            default:
+              src = "data:" + type + ";base64," + text;
+              break;
+          }
+        } else if(_canonical_uri) {
+          switch(type) {
+            case "application/pdf":
+              tag = "embed";
+              src = _canonical_uri;
+              break;
+            case "image/svg+xml":
+              src = _canonical_uri;
+              break;
+            default:
+              src = _canonical_uri;
+              break;
+          }
+        } else {
+          // Just trigger loading of the tiddler
+          _options.wiki.getTiddlerText(href);
+        }
+      }
+    }
+    const attrs = [
+      `src="${src}"`
+    ]
+    if (title) {
+      attrs.push(`title="${title}"`)
+    }
+    if (text) {
+      attrs.push(`alt="${text}"`)
+    }
+    return `<${tag} ${attrs.join(' ')}></${tag}>`;
+  }
 
   renderer.link = function (href, title, text) {
     if (this.options.sanitize) {
@@ -72,6 +131,7 @@ Originally fork from http://bjtools.tiddlyspot.com
   });
 
   var MarkdownParser = function(type, text, options) {
+    _options = options
     this.tree = [{type: "raw", html: marked(text)}];
   };
 

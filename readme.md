@@ -1,3 +1,8 @@
+## why need this
+
+- office markdown plugin don't support code block, and image support is not good  
+- replace [markdown-js](https://github.com/evilstreak/markdown-js) width [marked](https://github.com/chjj/marked), support more feature
+
 ## Description
 
 a [tiddlywiki5](https://github.com/Jermolene/TiddlyWiki5) fork support markdown by [marked](https://github.com/chjj/marked)

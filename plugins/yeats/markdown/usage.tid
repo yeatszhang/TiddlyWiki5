@@ -1,17 +1,10 @@
 title: $:/plugins/yeats/markdown/usage
 
-! Markdown Dialects
+!! 实现方式
 
-By default the markdown parser recognises the original dialect of Markdown [[as described by John Gruber|http://daringfireball.net/projects/markdown/]]. An extended dialect called "Maruku" is also included that provides table support and other advanced features. The syntax extensions are modelled on those of [[PHP Markdown Extra|https://michelf.ca/projects/php-markdown/extra/]].
+基于 https://github.com/chjj/marked
 
-The configuration tiddler [[$:/config/markdown/dialect]] determines which dialect is used:
-
-|!Dialect |!Description |
-|Gruber |Standard Markdown |
-|Maruku |Extended Maruku Markdown |
-
-
-! Creating ~WikiLinks
+!! Creating ~WikiLinks
 
 Create wiki links with the usual Markdown link syntax targeting `#` and the target tiddler title:
 
@@ -19,7 +12,7 @@ Create wiki links with the usual Markdown link syntax targeting `#` and the targ
 [link text](#TiddlerTitle)
 ```
 
-! Images
+!! Images
 
 Markdown image syntax can be used to reference images by tiddler title or an external URI. For example:
 
